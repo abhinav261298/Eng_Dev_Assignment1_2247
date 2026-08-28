@@ -1,0 +1,56 @@
+{
+  "useCase": "UC1",
+  "city": "Mumbai",
+  "date": "2025-08-14",
+  "population": "orders due for delivery in Mumbai on 2025-08-14",
+  "baseline": "all Mumbai orders (Jan–Sep 2025)",
+  "outcomes": {
+    "totalOrders": 8,
+    "failed": 3,
+    "late": 1,
+    "onTime": 0,
+    "returned": 0,
+    "pendingOrInTransit": 4,
+    "failureRate": 0.375,
+    "lateRate": 0.125
+  },
+  "failureReasons": [
+    {
+      "reason": "Stockout",
+      "count": 2,
+      "share": 0.6666666666666666
+    },
+    {
+      "reason": "Traffic congestion",
+      "count": 1,
+      "share": 0.3333333333333333
+    }
+  ],
+  "factorRates": [],
+  "corroborations": [
+    {
+      "reason": "Stockout",
+      "evidenceLabel": "warehouse \"Stock delay on item\" note",
+      "matchedOrders": 0,
+      "ordersWithReason": 2,
+      "corroborationRate": 0
+    },
+    {
+      "reason": "Traffic congestion",
+      "evidenceLabel": "fleet congestion note or heavy-traffic record",
+      "matchedOrders": 0,
+      "ordersWithReason": 1,
+      "corroborationRate": 0
+    }
+  ],
+  "feedbackSamples": [
+    "Package cancelled due to stock issue.",
+    "Package was late, no update from driver."
+  ],
+  "caveats": [
+    "Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.",
+    "Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.",
+    "Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.",
+    "Delivered-but-late orders carry no recorded failure_reason; their explanation rests on association evidence only."
+  ]
+}

@@ -144,30 +144,34 @@ FROM orders o;
 -- Aux fan-out collapsed to one row per order (evidence flags via MAX to avoid double counting;
 -- up to 6 fleet logs exist per order).
 CREATE VIEW IF NOT EXISTS v_order_fleet AS
-SELECT order_id,
+SELECT fl.order_id,
   COUNT(*)                                 AS fleet_log_count,
-  COUNT(DISTINCT driver_id)                AS driver_count,
-  MAX(gps_delay_notes = 'Heavy congestion')  AS had_congestion,
-  MAX(gps_delay_notes = 'Breakdown')         AS had_breakdown,
-  MAX(gps_delay_notes = 'Address not found') AS had_address_issue,
-  GROUP_CONCAT(DISTINCT gps_delay_notes)   AS fleet_notes
-FROM fleet_logs
-GROUP BY order_id;
+  COUNT(DISTINCT fl.driver_id)             AS driver_count,
+  MAX(fl.gps_delay_notes = 'Heavy congestion')  AS had_congestion,
+  MAX(fl.gps_delay_notes = 'Breakdown')         AS had_breakdown,
+  MAX(fl.gps_delay_notes = 'Address not found') AS had_address_issue,
+  (SELECT GROUP_CONCAT(note, ' | ')
+     FROM (SELECT DISTINCT gps_delay_notes AS note FROM fleet_logs f2
+           WHERE f2.order_id = fl.order_id AND gps_delay_notes IS NOT NULL)) AS fleet_notes
+FROM fleet_logs fl
+GROUP BY fl.order_id;
 
 -- Per-order warehouse ops summary; picking/dispatch durations are internally consistent
 -- within warehouse_logs even though absolute timestamps are not.
 CREATE VIEW IF NOT EXISTS v_order_warehouse AS
-SELECT order_id,
+SELECT wl.order_id,
   COUNT(*)                                  AS wh_log_count,
-  COUNT(DISTINCT warehouse_id)              AS warehouse_count,
-  MAX(notes = 'Stock delay on item')        AS had_stock_delay,
-  MAX(notes = 'System issue')               AS had_system_issue,
-  MAX(notes = 'Slow packing')               AS had_slow_packing,
-  ROUND(AVG((julianday(picking_end)  - julianday(picking_start)) * 1440), 1) AS avg_picking_mins,
-  ROUND(AVG((julianday(dispatch_time) - julianday(picking_end))  * 1440), 1) AS avg_dispatch_lag_mins,
-  GROUP_CONCAT(DISTINCT notes)              AS wh_notes
-FROM warehouse_logs
-GROUP BY order_id;
+  COUNT(DISTINCT wl.warehouse_id)           AS warehouse_count,
+  MAX(wl.notes = 'Stock delay on item')     AS had_stock_delay,
+  MAX(wl.notes = 'System issue')            AS had_system_issue,
+  MAX(wl.notes = 'Slow packing')            AS had_slow_packing,
+  ROUND(AVG((julianday(wl.picking_end)  - julianday(wl.picking_start)) * 1440), 1) AS avg_picking_mins,
+  ROUND(AVG((julianday(wl.dispatch_time) - julianday(wl.picking_end))  * 1440), 1) AS avg_dispatch_lag_mins,
+  (SELECT GROUP_CONCAT(note, ' | ')
+     FROM (SELECT DISTINCT notes AS note FROM warehouse_logs w2
+           WHERE w2.order_id = wl.order_id AND notes IS NOT NULL)) AS wh_notes
+FROM warehouse_logs wl
+GROUP BY wl.order_id;
 
 -- Condition flags per order.
 CREATE VIEW IF NOT EXISTS v_order_external AS
@@ -182,11 +186,13 @@ GROUP BY order_id;
 
 -- Voice of customer per order (text templates only; sentiment/rating excluded as unreliable).
 CREATE VIEW IF NOT EXISTS v_order_feedback AS
-SELECT order_id,
+SELECT fb.order_id,
   COUNT(*)                             AS feedback_count,
-  GROUP_CONCAT(DISTINCT feedback_text) AS feedback_texts
-FROM feedback
-GROUP BY order_id;
+  (SELECT GROUP_CONCAT(txt, ' | ')
+     FROM (SELECT DISTINCT feedback_text AS txt FROM feedback f2
+           WHERE f2.order_id = fb.order_id AND feedback_text IS NOT NULL)) AS feedback_texts
+FROM feedback fb
+GROUP BY fb.order_id;
 
 -- The denormalized analysis surface: one row per order. LEFT JOINs preserve the ~37% of
 -- orders that lack records in a given auxiliary table.

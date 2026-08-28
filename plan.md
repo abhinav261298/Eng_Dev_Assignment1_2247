@@ -45,11 +45,18 @@ more than one warehouse and 2,586 span more than one driver.
       6,335/6,324 aux coverage, 2,598 multi-warehouse orders; order_360 stays at exactly
       10,000 rows (no join fan-out); outcome split reconciles (671 On-Time + 1,271 Late = 1,942 Delivered)
 
-### Phase 2 — Deterministic engine + CLI + tests  [PENDING]
-- [ ] src/insights/ — UC1–UC6 typed evidence JSON functions
-- [ ] src/narrative/templates.ts — deterministic renderer
-- [ ] src/cli.ts — menu + validated params (dimension values from DB)
-- [ ] Jest tests (happy + error paths), coverage ≥ 85%
+### Phase 2 — Deterministic engine + CLI + tests  [DONE 2026-08-28]
+- [x] src/insights/types.ts — typed, tier-labeled evidence structures (LLM may not add facts)
+- [x] src/insights/common.ts — shared population/baseline aggregation, corroboration map,
+      association lifts with MIN_SUPPORT = 30, standard caveats
+- [x] src/insights/useCases.ts (UC1–UC5) + onboardingRisk.ts (UC6, explicit projection)
+- [x] src/narrative/templates.ts — deterministic renderer; render.ts dispatcher (LLM hook for Phase 3)
+- [x] src/cli.ts — menu + validated params (dimension values listed from DB); every run saves
+      evidence JSON + narrative TXT into outputs/
+- [x] Jest: 30 tests pass (happy + error paths per use case); coverage 97.6% stmts / 85.3%
+      branches / 98.7% funcs (>= 85% gate)
+- Note: readline/promises drops piped lines between prompts → replaced with a line-buffered
+      prompt helper so the CLI works both interactively and scripted (needed for demo recording)
 
 ### Phase 3 — OpenAI narrative layer  [PENDING]
 - [ ] src/narrative/openaiRenderer.ts — evidence-grounded prompt, tier-language guardrails
