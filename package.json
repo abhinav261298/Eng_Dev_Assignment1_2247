@@ -29,6 +29,7 @@
   "dependencies": {
     "better-sqlite3": "^12.4.1",
     "csv-parse": "^7.0.2",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "openai": "^6.49.0"
   }
 }

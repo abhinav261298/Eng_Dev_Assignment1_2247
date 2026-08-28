@@ -1,0 +1,38 @@
+LIKELY CAUSES OF DELIVERY FAILURES DURING THE FESTIVAL PERIOD & PREPARATION
+
+Population: orders with a festival record in external factors — 2242 orders.
+Outcomes: 443 failed (19.8%), 288 delivered late (12.8%), 144 on-time, 429 returned, 938 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Warehouse delay: 110 orders (24.8% of failures)
+  - Incorrect address: 86 orders (19.4% of failures)
+  - Traffic congestion: 85 orders (19.2% of failures)
+  - Weather disruption: 81 orders (18.3% of failures)
+  - Stockout: 81 orders (18.3% of failures)
+
+Corroborating operational evidence:
+  - "Incorrect address" corroborated by fleet "Address not found" note in 24/86 orders (27.9%)
+  - "Stockout" corroborated by warehouse "Stock delay on item" note in 13/81 orders (16.0%)
+  - "Warehouse delay" corroborated by warehouse delay-related notes in 62/110 orders (56.4%)
+  - "Traffic congestion" corroborated by fleet congestion note or heavy-traffic record in 47/85 orders (55.3%)
+  - "Weather disruption" corroborated by rain/fog external record in 66/81 orders (81.5%)
+
+Associated conditions (co-occurrence, NOT causation; vs orders without a festival record):
+  - external factor: festival period: 100.0% of orders (baseline 0.0%, lift +100.0pp, n=2242)
+  - external factor: rain or fog: 82.6% of orders (baseline 39.3%, lift +43.3pp, n=1852)
+  - external factor: heavy traffic: 49.7% of orders (baseline 22.2%, lift +27.5pp, n=1115)
+  - fleet log reported address not found: 20.6% of orders (baseline 21.9%, lift -1.3pp, n=461)
+  - warehouse noted system issue: 21.1% of orders (baseline 22.2%, lift -1.1pp, n=473)
+
+Customer feedback samples: "Delivery never came, wrong address issue." / "Driver was polite but package was delayed." / "Good service, on time delivery."
+
+Preparation recommendations:
+  - Add temporary picking/packing staff and extend dispatch windows before festival peaks.
+  - Re-plan festival-week routes and shift deliveries to off-peak windows.
+  - Run address verification campaigns before festival-season order surges.
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.
+  - Festival flag comes from external_factors records; orders without any external record fall into the baseline.

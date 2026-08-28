@@ -58,10 +58,15 @@ more than one warehouse and 2,586 span more than one driver.
 - Note: readline/promises drops piped lines between prompts → replaced with a line-buffered
       prompt helper so the CLI works both interactively and scripted (needed for demo recording)
 
-### Phase 3 — OpenAI narrative layer  [PENDING]
-- [ ] src/narrative/openaiRenderer.ts — evidence-grounded prompt, tier-language guardrails
-- [ ] Graceful fallback on missing key / API error / timeout
-- [ ] Tests with mocked OpenAI client
+### Phase 3 — OpenAI narrative layer  [DONE 2026-08-28]
+- [x] src/narrative/openaiRenderer.ts — system prompt enforces: numbers ONLY from evidence JSON,
+      tier language (causal only for recorded reasons, "associated with" for lifts), caveats
+      reproduced, <= ~350 words; 20s timeout, temperature 0.2, model via OPENAI_MODEL (default gpt-4o-mini)
+- [x] Graceful fallback verified: missing key / API error / empty response all return the
+      deterministic template; CLI labels the answer source (openai vs template)
+- [x] 6 new tests with an injected mock client (happy, API error, empty response, no key,
+      fallback chain) — 36 tests total, coverage gates still green
+- Note: live-key smoke test pending user's OPENAI_API_KEY in .env (never committed)
 
 ### Phase 4 — Outputs & documentation  [PENDING]
 - [ ] Recorded sample outputs for all six use cases → outputs/

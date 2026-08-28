@@ -1,5 +1,6 @@
 import { UseCaseEvidence } from '../insights/types';
 import { renderTemplate } from './templates';
+import { tryOpenAiNarrative, OpenAiNarrativeOptions } from './openaiRenderer';
 
 export interface NarrativeResult {
   readonly narrative: string;
@@ -7,11 +8,15 @@ export interface NarrativeResult {
 }
 
 /**
- * Renders a narrative for the given evidence.
- * Phase 3 adds an OpenAI renderer tried first; the deterministic template is always
- * the fallback so the six use cases never depend on LLM availability.
+ * Renders a narrative for the given evidence: OpenAI first (strictly grounded in the
+ * evidence JSON), deterministic template on ANY failure. The six use cases therefore
+ * never depend on LLM availability.
  */
-export const renderNarrative = async (evidence: UseCaseEvidence): Promise<NarrativeResult> => ({
-  narrative: renderTemplate(evidence),
-  source: 'template'
-});
+export const renderNarrative = async (
+  evidence: UseCaseEvidence,
+  options: OpenAiNarrativeOptions = {}
+): Promise<NarrativeResult> => {
+  const openAiNarrative = await tryOpenAiNarrative(evidence, options);
+  if (openAiNarrative) return { narrative: openAiNarrative, source: 'openai' };
+  return { narrative: renderTemplate(evidence), source: 'template' };
+};
