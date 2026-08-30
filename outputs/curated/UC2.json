@@ -1,0 +1,48 @@
+{
+  "useCase": "UC2",
+  "clientId": 57,
+  "clientName": "Swaminathan-Mahal",
+  "fromDate": "2025-08-01",
+  "toDate": "2025-08-07",
+  "clientAllTimeFailureRate": 0.18518518518518517,
+  "systemFailureRate": 0.2004,
+  "population": "orders placed by Swaminathan-Mahal between 2025-08-01 and 2025-08-07",
+  "baseline": "all Swaminathan-Mahal orders",
+  "outcomes": {
+    "totalOrders": 3,
+    "failed": 2,
+    "late": 0,
+    "onTime": 0,
+    "returned": 0,
+    "pendingOrInTransit": 1,
+    "failureRate": 0.6666666666666666,
+    "lateRate": 0
+  },
+  "failureReasons": [
+    {
+      "reason": "Weather disruption",
+      "count": 2,
+      "share": 1
+    }
+  ],
+  "factorRates": [],
+  "corroborations": [
+    {
+      "reason": "Weather disruption",
+      "evidenceLabel": "rain/fog external record",
+      "matchedOrders": 2,
+      "ordersWithReason": 2,
+      "corroborationRate": 1
+    }
+  ],
+  "feedbackSamples": [
+    "Good service, on time delivery.",
+    "Driver was polite but package was delayed.",
+    "Package cancelled due to stock issue."
+  ],
+  "caveats": [
+    "Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.",
+    "Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.",
+    "Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates."
+  ]
+}

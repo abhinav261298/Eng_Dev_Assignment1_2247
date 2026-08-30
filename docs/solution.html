@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Delivery Failure Root-Cause Analysis — POC Solution Write-Up</title>
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; margin: 40px; color: #1a1a1a; }
+  h1 { font-size: 20pt; color: #1f3864; border-bottom: 2px solid #1f3864; padding-bottom: 6px; }
+  h2 { font-size: 15pt; color: #1f3864; margin-top: 28px; }
+  h3 { font-size: 12pt; color: #2e5395; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+  th, td { border: 1px solid #8ea9c1; padding: 6px 8px; text-align: left; vertical-align: top; font-size: 10pt; }
+  th { background: #dbe5f1; }
+  pre { background: #f3f5f8; border: 1px solid #c9d4e0; padding: 10px; font-family: "Courier New", monospace; font-size: 9pt; white-space: pre; }
+  code { font-family: "Courier New", monospace; font-size: 10pt; background: #f3f5f8; }
+  .caveat { background: #fdf3d7; border: 1px solid #e5c76b; padding: 8px 10px; font-size: 10pt; }
+</style>
+</head>
+<body>
+
+<h1>Delivery Failure Root-Cause Analysis — POC Solution</h1>
+<p><b>Goal:</b> aggregate the fragmented logistics data sources (orders, fleet logs, warehouse logs,
+external conditions, customer feedback), correlate events across them, and generate human-readable,
+evidence-grounded explanations and recommendations for delivery failures and delays — answering
+questions such as <i>"Why were deliveries delayed in city X yesterday?"</i> without manual
+cross-system investigation.</p>
+
+<h2>1. Solution Overview</h2>
+<p>The POC is a lightweight, fully local <b>TypeScript/Node.js + SQLite</b> application:</p>
+<pre>
+sample-data-set/*.csv  (8 provided files — read-only)
+        |
+        |  src/ingest.ts   csv-parse, type coercion, 17-check data-quality report
+        v
+  logistics.db  (SQLite)
+        |  schema.sql: 8 base tables + 10 indexes + 8 views
+        |  (v_order_outcome, v_order_fleet, v_order_warehouse, v_order_external,
+        |   v_order_feedback, order_360, v_order_warehouse_pairs, v_order_driver_pairs)
+        v
+  src/insights/*   deterministic engine: UC1-UC6
+        |           filter -> outcome split -> recorded causes -> corroboration
+        |           -> association lifts vs baseline -> evidence JSON
+        v
+  src/narrative/*  OpenAI renderer (optional, strictly grounded in the evidence JSON)
+        |           -> deterministic template renderer as guaranteed fallback
+        v
+  src/cli.ts       menu of the six use cases, parameter validation against DB values,
+                   every answer saved as JSON (evidence) + TXT (narrative)
+</pre>
+<p><b>Design principle:</b> every number in every narrative is computed by the deterministic
+SQL/TypeScript engine. The optional LLM layer only rewrites the computed evidence into prose and is
+forbidden from calculating or inventing facts; if it is unavailable or fails, a deterministic
+template produces the same content. The six use cases therefore never depend on LLM availability.</p>
+
+<h2>2. Data Landscape</h2>
+<table>
+  <tr><th>Dataset</th><th>Rows</th><th>Key / links</th><th>Analytical role</th></tr>
+  <tr><td>orders.csv</td><td>10,000</td><td>order_id; client_id &rarr; clients</td><td>Anchor fact table: status, order/promised/actual dates, city, payment mode, amount, recorded failure_reason</td></tr>
+  <tr><td>clients.csv</td><td>500</td><td>client_id</td><td>Client dimension (name, city)</td></tr>
+  <tr><td>drivers.csv</td><td>2,000</td><td>driver_id</td><td>Driver dimension (partner company, city, active status)</td></tr>
+  <tr><td>warehouses.csv</td><td>50</td><td>warehouse_id</td><td>Warehouse dimension (city, capacity)</td></tr>
+  <tr><td>fleet_logs.csv</td><td>10,000</td><td>order_id, driver_id</td><td>GPS delay notes (congestion / breakdown / address not found), trip times</td></tr>
+  <tr><td>warehouse_logs.csv</td><td>10,000</td><td>order_id, warehouse_id</td><td>Picking/dispatch timestamps and delay notes</td></tr>
+  <tr><td>external_factors.csv</td><td>10,000</td><td>order_id</td><td>Traffic, weather, event (festival/holiday/strike) per order</td></tr>
+  <tr><td>feedback.csv</td><td>10,000</td><td>order_id</td><td>Customer feedback text (sentiment/rating fields proved unreliable)</td></tr>
+</table>
+
+<h3>Entity relationships (as they actually exist in the data)</h3>
+<pre>
+                              clients
+                                 ^
+                                 |  client_id (1:N)
+ +---------------------------  orders  ---------------------------+
+ |  order_id (PK), city, state, order_date,                       |
+ |  promised_delivery_date, actual_delivery_date,                 |
+ |  status, payment_mode, amount, failure_reason                  |
+ +----+--------------+------------------+------------------+------+
+      | order_id     | order_id         | order_id         | order_id
+      v (1:N)        v (1:N)            v (1:N)            v (1:N)
+  fleet_logs     warehouse_logs    external_factors     feedback
+      |               |
+      | driver_id     | warehouse_id
+      v (N:1)         v (N:1)
+   drivers        warehouses
+</pre>
+<p><b>Important structural fact:</b> orders carry <i>no</i> direct warehouse or driver column —
+those relationships exist only through the log tables. 2,598 orders were handled by more than one
+warehouse and 2,586 by more than one driver, so warehouse/driver analysis is <b>pair-level</b>:
+an order counts toward every entity that touched it (&ldquo;orders <i>involving</i> Warehouse X&rdquo;).</p>
+
+<h3>Data-quality findings (verified by profiling; they shaped the design)</h3>
+<table>
+  <tr><th>Finding</th><th>Design response</th></tr>
+  <tr><td>97% of warehouse/external/fleet timestamps are &gt;3 days away from the linked order date</td><td>All time filtering anchors on <code>orders</code> dates only</td></tr>
+  <tr><td>Feedback sentiment/rating contradict the text (e.g. "Negative" with rating 5)</td><td>Only the feedback text is used; sentiment/rating excluded</td></tr>
+  <tr><td>Each log table covers only ~63% of orders, with up to 6&ndash;9 rows per order</td><td>Per-order flag aggregation views prevent join fan-out; coverage caveat attached to every answer</td></tr>
+  <tr><td>Driver's registered city matches the order city in only ~11% of fleet logs</td><td>Driver geography not used as an analytical dimension</td></tr>
+  <tr><td>~50% of orders have created_at after order_date</td><td>created_at treated as ingestion noise</td></tr>
+  <tr><td>1,271 of 1,942 delivered orders were delivered late</td><td>"Delay" is computed as actual &gt; promised, not from status alone</td></tr>
+</table>
+
+<h2>3. Correlation Methodology — Three Evidence Tiers</h2>
+<p>The engine never claims causality it cannot support. Every fact in an answer belongs to one of
+three tiers, and the narrative language is constrained per tier (enforced in the template renderer
+and in the LLM prompt):</p>
+<table>
+  <tr><th>Tier</th><th>Source</th><th>Language allowed</th></tr>
+  <tr><td><b>1. Recorded cause</b></td><td><code>orders.failure_reason</code> — present on 100% of failed orders</td><td>Causal: "failed due to Stockout"</td></tr>
+  <tr><td><b>2. Corroboration</b></td><td>Per-order cross-check of the recorded reason against matching log evidence (e.g. "Incorrect address" &times; fleet "Address not found" note)</td><td>"corroborated by ... in N/M orders"</td></tr>
+  <tr><td><b>3. Association</b></td><td>Rate of an evidence flag in the population vs a stated baseline (lift), surfaced only with support n &ge; 30</td><td>"associated with / co-occurred with" — never causal</td></tr>
+</table>
+<p class="caveat"><b>Honesty note:</b> the provided synthetic dataset shows weak cross-table
+correlations (association lifts are typically a few percentage points). The engine reports weak
+signals as weak instead of manufacturing narratives — the recorded failure reason plus its
+corroboration rate is the reliable core of every answer, and every answer ends with explicit caveats.</p>
+
+<h2>4. How Each Use Case Is Answered</h2>
+<table>
+  <tr><th>#</th><th>Question</th><th>Engine logic (over the order_360 view)</th></tr>
+  <tr><td>1</td><td>Why were deliveries delayed in city X on day D?</td><td>Orders due (promised date = D) in X &rarr; outcome split &rarr; recorded reasons for failures + corroboration &rarr; association lifts vs the city's own baseline. Late-but-delivered orders have no recorded reason; they rely on tier-3 evidence only (stated in the answer).</td></tr>
+  <tr><td>2</td><td>Why did client C's orders fail in a window?</td><td>C's orders in window &rarr; reason ranking + corroboration &rarr; window failure rate vs C's all-time rate vs system rate.</td></tr>
+  <tr><td>3</td><td>Top failure reasons linked to warehouse W in month M?</td><td>Pair-level: all orders W touched in M &rarr; reason ranking &rarr; W's picking/dispatch durations vs all-warehouse averages &rarr; W's city mix shown for confounder visibility.</td></tr>
+  <tr><td>4</td><td>Compare failure causes: city A vs city B in month M?</td><td>Symmetric per-city blocks (volume, failure/late rates, reason mix, lifts vs all-city baseline) + failure-rate gap.</td></tr>
+  <tr><td>5</td><td>Likely causes during the festival period; how to prepare?</td><td>Festival-flagged orders vs non-festival baseline &rarr; rate deltas + reason mix &rarr; preparation recommendations keyed to the top recorded reasons.</td></tr>
+  <tr><td>6</td><td>Risks of onboarding ~20,000 extra monthly orders?</td><td>Explicit <b>projection</b>: historical failure/late rates by reason scaled to the new volume; capacity context per target city (warehouse capacity totals, active drivers); mitigations keyed to the largest projected reasons.</td></tr>
+</table>
+
+<h2>5. Architecture Options Considered</h2>
+<table>
+  <tr><th>Option</th><th>Summary</th><th>Assessment</th></tr>
+  <tr><td>A. In-memory dataframe pipeline</td><td>Load CSVs, join and aggregate in code</td><td>Fastest to build, but join/dedup rules end up buried in code; fan-out mistakes are easy</td></tr>
+  <tr><td><b>B. SQLite + typed engine (chosen)</b></td><td>Schema + views encode the data model once; use cases are parameterized queries + narrative templates</td><td>Explicit, verifiable data model; ad-hoc questions become SQL; zero infrastructure</td></tr>
+  <tr><td>C. LLM-centric analysis</td><td>LLM interprets questions and writes narratives directly over data</td><td>Rejected as the core: non-deterministic, can hallucinate correlations the data does not contain</td></tr>
+</table>
+<p>The chosen design uses C's idea only as a thin optional layer on top of B: the LLM (OpenAI,
+key via <code>.env</code>) rewrites the deterministic evidence JSON into prose under strict rules,
+with the template renderer as a guaranteed fallback.</p>
+
+<h2>6. Implementation &amp; Verification</h2>
+<table>
+  <tr><th>Aspect</th><th>Detail</th></tr>
+  <tr><td>Stack</td><td>TypeScript 5.9, Node.js 20, better-sqlite3 12, csv-parse, dotenv, optional openai SDK; Jest + ts-jest for tests</td></tr>
+  <tr><td>Ingestion checks</td><td>17 automated data-quality checks on every ingest (row counts, orphan FKs, outcome distributions, multi-warehouse counts) — all pass</td></tr>
+  <tr><td>Tests</td><td>36 Jest tests (happy + error paths per use case, template rendering, LLM layer with mocked client); coverage &asymp; 98% statements / 85% branches with an 85% gate</td></tr>
+  <tr><td>Run</td><td><code>npm install</code> &rarr; <code>npm run ingest</code> &rarr; <code>npm run cli</code> (menu of the six use cases); <code>npm run record-samples</code> regenerates the curated outputs; <code>npm test</code></td></tr>
+  <tr><td>Outputs</td><td>Every CLI answer is saved as evidence JSON + narrative TXT under <code>outputs/</code>; curated six-use-case outputs under <code>outputs/curated/</code></td></tr>
+</table>
+
+<h2>7. Sample Output (UC2, deterministic template)</h2>
+<pre>
+WHY DID SWAMINATHAN-MAHAL'S ORDERS FAIL (2025-08-01 to 2025-08-07)?
+
+Population: orders placed by Swaminathan-Mahal between 2025-08-01 and 2025-08-07 - 3 orders.
+Outcomes: 2 failed (66.7%), 0 delivered late (0.0%), 0 on-time, 0 returned, 1 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Weather disruption: 2 orders (100.0% of failures)
+
+Corroborating operational evidence:
+  - "Weather disruption" corroborated by rain/fog external record in 2/2 orders (100.0%)
+
+Associated conditions: none met the minimum support threshold (n >= 30).
+
+Context: window failure rate 66.7% vs client all-time 18.5% vs system 20.0%.
+
+Caveats: (coverage ~63%; association is not causation; time filters anchor on order dates)
+</pre>
+<p>The complete outputs for all six use cases are in the companion document
+<i>Sample-Use-Case-Outputs</i> and under <code>outputs/curated/</code> in the repository.</p>
+
+<h2>8. Limitations &amp; Future Enhancements</h2>
+<ul>
+  <li><b>Natural-language question parsing</b> is out of POC scope by decision; the CLI offers the six
+      predefined use cases with validated parameters. A future LLM intent-parser can map free-form
+      questions onto the same engine.</li>
+  <li>Association analysis reports co-occurrence lifts, not causal inference; with production-grade
+      data (coherent timestamps, richer factors) regression or uplift modeling could be added.</li>
+  <li>Warehouse <code>capacity</code> units are not defined in the data and are reported as-is.</li>
+  <li>The LLM layer was verified with mocked clients and by fallback behavior; live-key usage is
+      optional and never required for the demo.</li>
+</ul>
+
+</body>
+</html>

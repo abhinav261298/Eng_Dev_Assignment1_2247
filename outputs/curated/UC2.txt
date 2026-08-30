@@ -1,0 +1,23 @@
+Why did Swaminathan-Mahal's orders fail in the week 2025-08-01 to 2025-08-07?
+
+WHY DID SWAMINATHAN-MAHAL'S ORDERS FAIL (2025-08-01 to 2025-08-07)?
+
+Population: orders placed by Swaminathan-Mahal between 2025-08-01 and 2025-08-07 — 3 orders.
+Outcomes: 2 failed (66.7%), 0 delivered late (0.0%), 0 on-time, 0 returned, 1 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Weather disruption: 2 orders (100.0% of failures)
+
+Corroborating operational evidence:
+  - "Weather disruption" corroborated by rain/fog external record in 2/2 orders (100.0%)
+
+Associated conditions: none met the minimum support threshold (n >= 30).
+
+Customer feedback samples: "Good service, on time delivery." / "Driver was polite but package was delayed." / "Package cancelled due to stock issue."
+
+Context: window failure rate 66.7% vs client all-time 18.5% vs system 20.0%.
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.

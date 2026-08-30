@@ -1,0 +1,119 @@
+{
+  "useCase": "UC3",
+  "warehouseName": "Warehouse 7",
+  "month": "2025-08",
+  "avgPickingMins": 12.3,
+  "avgDispatchLagMins": 35.1,
+  "allWarehousePickingMins": 12.5,
+  "allWarehouseDispatchLagMins": 35,
+  "warehouseCityMix": [
+    {
+      "city": "New Delhi",
+      "orders": 35
+    },
+    {
+      "city": "Coimbatore",
+      "orders": 24
+    },
+    {
+      "city": "Mysuru",
+      "orders": 23
+    },
+    {
+      "city": "Ahmedabad",
+      "orders": 19
+    },
+    {
+      "city": "Nagpur",
+      "orders": 17
+    }
+  ],
+  "population": "orders involving Warehouse 7 placed in 2025-08",
+  "baseline": "all orders involving any warehouse in 2025-08",
+  "outcomes": {
+    "totalOrders": 25,
+    "failed": 10,
+    "late": 1,
+    "onTime": 1,
+    "returned": 8,
+    "pendingOrInTransit": 5,
+    "failureRate": 0.4,
+    "lateRate": 0.04
+  },
+  "failureReasons": [
+    {
+      "reason": "Traffic congestion",
+      "count": 3,
+      "share": 0.3
+    },
+    {
+      "reason": "Weather disruption",
+      "count": 2,
+      "share": 0.2
+    },
+    {
+      "reason": "Stockout",
+      "count": 2,
+      "share": 0.2
+    },
+    {
+      "reason": "Incorrect address",
+      "count": 2,
+      "share": 0.2
+    },
+    {
+      "reason": "Warehouse delay",
+      "count": 1,
+      "share": 0.1
+    }
+  ],
+  "factorRates": [],
+  "corroborations": [
+    {
+      "reason": "Incorrect address",
+      "evidenceLabel": "fleet \"Address not found\" note",
+      "matchedOrders": 0,
+      "ordersWithReason": 2,
+      "corroborationRate": 0
+    },
+    {
+      "reason": "Stockout",
+      "evidenceLabel": "warehouse \"Stock delay on item\" note",
+      "matchedOrders": 0,
+      "ordersWithReason": 2,
+      "corroborationRate": 0
+    },
+    {
+      "reason": "Warehouse delay",
+      "evidenceLabel": "warehouse delay-related notes",
+      "matchedOrders": 1,
+      "ordersWithReason": 1,
+      "corroborationRate": 1
+    },
+    {
+      "reason": "Traffic congestion",
+      "evidenceLabel": "fleet congestion note or heavy-traffic record",
+      "matchedOrders": 1,
+      "ordersWithReason": 3,
+      "corroborationRate": 0.3333333333333333
+    },
+    {
+      "reason": "Weather disruption",
+      "evidenceLabel": "rain/fog external record",
+      "matchedOrders": 0,
+      "ordersWithReason": 2,
+      "corroborationRate": 0
+    }
+  ],
+  "feedbackSamples": [
+    "Driver was polite but package was delayed.",
+    "Delivery never came, wrong address issue.",
+    "Good service, on time delivery."
+  ],
+  "caveats": [
+    "Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.",
+    "Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.",
+    "Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.",
+    "Attribution is pair-level: an order counts toward every warehouse that handled it."
+  ]
+}

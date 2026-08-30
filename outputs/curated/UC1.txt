@@ -1,0 +1,24 @@
+Why were deliveries delayed in New Delhi on 2025-04-27?
+
+WHY WERE DELIVERIES DELAYED IN NEW DELHI ON 2025-04-27?
+
+Population: orders due for delivery in New Delhi on 2025-04-27 — 16 orders.
+Outcomes: 2 failed (12.5%), 5 delivered late (31.3%), 1 on-time, 3 returned, 5 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Weather disruption: 1 orders (50.0% of failures)
+  - Warehouse delay: 1 orders (50.0% of failures)
+
+Corroborating operational evidence:
+  - "Warehouse delay" corroborated by warehouse delay-related notes in 0/1 orders (0.0%)
+  - "Weather disruption" corroborated by rain/fog external record in 1/1 orders (100.0%)
+
+Associated conditions: none met the minimum support threshold (n >= 30).
+
+Customer feedback samples: "Driver was polite but package was delayed." / "Delivery never came, wrong address issue." / "Package was late, no update from driver."
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.
+  - Delivered-but-late orders carry no recorded failure_reason; their explanation rests on association evidence only.

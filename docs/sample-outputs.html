@@ -1,0 +1,215 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sample Use-Case Outputs</title><style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:40px;color:#1a1a1a}h1{font-size:20pt;color:#1f3864;border-bottom:2px solid #1f3864;padding-bottom:6px}h2{font-size:13pt;color:#1f3864;margin-top:26px}pre{background:#f3f5f8;border:1px solid #c9d4e0;padding:10px;font-family:"Courier New",monospace;font-size:9pt;white-space:pre-wrap}</style></head><body><h1>Delivery Root-Cause Analysis POC — Sample Use-Case Outputs</h1><p>Generated deterministically from the provided sample-data-set CSVs via <code>npm run ingest &amp;&amp; npm run record-samples</code> (template renderer; no LLM involved). Evidence JSON for each answer is in <code>outputs/curated/</code>.</p><h2>UC1 — Why were deliveries delayed in New Delhi on 2025-04-27?</h2>
+<pre>WHY WERE DELIVERIES DELAYED IN NEW DELHI ON 2025-04-27?
+
+Population: orders due for delivery in New Delhi on 2025-04-27 — 16 orders.
+Outcomes: 2 failed (12.5%), 5 delivered late (31.3%), 1 on-time, 3 returned, 5 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Weather disruption: 1 orders (50.0% of failures)
+  - Warehouse delay: 1 orders (50.0% of failures)
+
+Corroborating operational evidence:
+  - "Warehouse delay" corroborated by warehouse delay-related notes in 0/1 orders (0.0%)
+  - "Weather disruption" corroborated by rain/fog external record in 1/1 orders (100.0%)
+
+Associated conditions: none met the minimum support threshold (n &gt;= 30).
+
+Customer feedback samples: "Driver was polite but package was delayed." / "Delivery never came, wrong address issue." / "Package was late, no update from driver."
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.
+  - Delivered-but-late orders carry no recorded failure_reason; their explanation rests on association evidence only.</pre>
+<h2>UC2 — Why did Swaminathan-Mahal's orders fail in the week 2025-08-01 to 2025-08-07?</h2>
+<pre>WHY DID SWAMINATHAN-MAHAL'S ORDERS FAIL (2025-08-01 to 2025-08-07)?
+
+Population: orders placed by Swaminathan-Mahal between 2025-08-01 and 2025-08-07 — 3 orders.
+Outcomes: 2 failed (66.7%), 0 delivered late (0.0%), 0 on-time, 0 returned, 1 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Weather disruption: 2 orders (100.0% of failures)
+
+Corroborating operational evidence:
+  - "Weather disruption" corroborated by rain/fog external record in 2/2 orders (100.0%)
+
+Associated conditions: none met the minimum support threshold (n &gt;= 30).
+
+Customer feedback samples: "Good service, on time delivery." / "Driver was polite but package was delayed." / "Package cancelled due to stock issue."
+
+Context: window failure rate 66.7% vs client all-time 18.5% vs system 20.0%.
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.</pre>
+<h2>UC3 — Top reasons for delivery failures linked to Warehouse 7 in August 2025?</h2>
+<pre>TOP FAILURE REASONS FOR ORDERS INVOLVING WAREHOUSE 7 IN 2025-08
+
+Population: orders involving Warehouse 7 placed in 2025-08 — 25 orders.
+Outcomes: 10 failed (40.0%), 1 delivered late (4.0%), 1 on-time, 8 returned, 5 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Traffic congestion: 3 orders (30.0% of failures)
+  - Weather disruption: 2 orders (20.0% of failures)
+  - Stockout: 2 orders (20.0% of failures)
+  - Incorrect address: 2 orders (20.0% of failures)
+  - Warehouse delay: 1 orders (10.0% of failures)
+
+Corroborating operational evidence:
+  - "Incorrect address" corroborated by fleet "Address not found" note in 0/2 orders (0.0%)
+  - "Stockout" corroborated by warehouse "Stock delay on item" note in 0/2 orders (0.0%)
+  - "Warehouse delay" corroborated by warehouse delay-related notes in 1/1 orders (100.0%)
+  - "Traffic congestion" corroborated by fleet congestion note or heavy-traffic record in 1/3 orders (33.3%)
+  - "Weather disruption" corroborated by rain/fog external record in 0/2 orders (0.0%)
+
+Associated conditions: none met the minimum support threshold (n &gt;= 30).
+
+Customer feedback samples: "Driver was polite but package was delayed." / "Delivery never came, wrong address issue." / "Good service, on time delivery."
+
+Warehouse ops: avg picking 12.3 min (all warehouses 12.5 min), avg dispatch lag 35.1 min (all warehouses 35 min).
+
+City mix (confounder visibility): New Delhi 35, Coimbatore 24, Mysuru 23, Ahmedabad 19, Nagpur 17.
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.
+  - Attribution is pair-level: an order counts toward every warehouse that handled it.</pre>
+<h2>UC4 — Compare delivery failure causes between New Delhi and Ahmedabad in July 2025?</h2>
+<pre>DELIVERY FAILURE COMPARISON: NEW DELHI vs AHMEDABAD (2025-07)
+
+--- New Delhi ---
+
+Population: orders placed in New Delhi during 2025-07 — 254 orders.
+Outcomes: 48 failed (18.9%), 33 delivered late (13.0%), 13 on-time, 48 returned, 112 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Weather disruption: 12 orders (25.0% of failures)
+  - Traffic congestion: 12 orders (25.0% of failures)
+  - Stockout: 9 orders (18.8% of failures)
+  - Warehouse delay: 8 orders (16.7% of failures)
+  - Incorrect address: 7 orders (14.6% of failures)
+
+Corroborating operational evidence:
+  - "Incorrect address" corroborated by fleet "Address not found" note in 2/7 orders (28.6%)
+  - "Stockout" corroborated by warehouse "Stock delay on item" note in 0/9 orders (0.0%)
+  - "Warehouse delay" corroborated by warehouse delay-related notes in 4/8 orders (50.0%)
+  - "Traffic congestion" corroborated by fleet congestion note or heavy-traffic record in 5/12 orders (41.7%)
+  - "Weather disruption" corroborated by rain/fog external record in 5/12 orders (41.7%)
+
+Associated conditions (co-occurrence, NOT causation; vs all orders placed in 2025-07 (all cities)):
+  - fleet log reported vehicle breakdown: 18.5% of orders (baseline 22.8%, lift -4.3pp, n=47)
+  - external factor: rain or fog: 42.9% of orders (baseline 47.2%, lift -4.3pp, n=109)
+  - external factor: holiday period: 16.9% of orders (baseline 20.9%, lift -4.0pp, n=43)
+  - external factor: heavy traffic: 22.4% of orders (baseline 26.3%, lift -3.9pp, n=57)
+  - external factor: strike: 16.5% of orders (baseline 19.9%, lift -3.4pp, n=42)
+
+Customer feedback samples: "Good service, on time delivery." / "Package cancelled due to stock issue." / "Package was late, no update from driver."
+
+--- Ahmedabad ---
+
+Population: orders placed in Ahmedabad during 2025-07 — 138 orders.
+Outcomes: 27 failed (19.6%), 27 delivered late (19.6%), 5 on-time, 31 returned, 48 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Stockout: 9 orders (33.3% of failures)
+  - Weather disruption: 6 orders (22.2% of failures)
+  - Warehouse delay: 5 orders (18.5% of failures)
+  - Traffic congestion: 5 orders (18.5% of failures)
+  - Incorrect address: 2 orders (7.4% of failures)
+
+Corroborating operational evidence:
+  - "Incorrect address" corroborated by fleet "Address not found" note in 0/2 orders (0.0%)
+  - "Stockout" corroborated by warehouse "Stock delay on item" note in 3/9 orders (33.3%)
+  - "Warehouse delay" corroborated by warehouse delay-related notes in 3/5 orders (60.0%)
+  - "Traffic congestion" corroborated by fleet congestion note or heavy-traffic record in 3/5 orders (60.0%)
+  - "Weather disruption" corroborated by rain/fog external record in 3/6 orders (50.0%)
+
+Associated conditions (co-occurrence, NOT causation; vs all orders placed in 2025-07 (all cities)):
+  - external factor: heavy traffic: 31.2% of orders (baseline 26.3%, lift +4.8pp, n=43)
+  - external factor: rain or fog: 51.4% of orders (baseline 47.2%, lift +4.3pp, n=71)
+  - external factor: festival period: 23.9% of orders (baseline 22.2%, lift +1.7pp, n=33)
+  - fleet log reported address not found: 21.7% of orders (baseline 20.9%, lift +0.9pp, n=30)
+  - fleet log reported vehicle breakdown: 23.2% of orders (baseline 22.8%, lift +0.4pp, n=32)
+
+Customer feedback samples: "Delivery never came, wrong address issue." / "Package cancelled due to stock issue." / "Driver was polite but package was delayed."
+
+Failure-rate gap (New Delhi minus Ahmedabad): -0.7pp.
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.</pre>
+<h2>UC5 — What are the likely causes of delivery failures during the festival period, and how should we prepare?</h2>
+<pre>LIKELY CAUSES OF DELIVERY FAILURES DURING THE FESTIVAL PERIOD &amp; PREPARATION
+
+Population: orders with a festival record in external factors — 2242 orders.
+Outcomes: 443 failed (19.8%), 288 delivered late (12.8%), 144 on-time, 429 returned, 938 pending/in-transit.
+
+Recorded causes (failure_reason on failed orders):
+  - Warehouse delay: 110 orders (24.8% of failures)
+  - Incorrect address: 86 orders (19.4% of failures)
+  - Traffic congestion: 85 orders (19.2% of failures)
+  - Weather disruption: 81 orders (18.3% of failures)
+  - Stockout: 81 orders (18.3% of failures)
+
+Corroborating operational evidence:
+  - "Incorrect address" corroborated by fleet "Address not found" note in 24/86 orders (27.9%)
+  - "Stockout" corroborated by warehouse "Stock delay on item" note in 13/81 orders (16.0%)
+  - "Warehouse delay" corroborated by warehouse delay-related notes in 62/110 orders (56.4%)
+  - "Traffic congestion" corroborated by fleet congestion note or heavy-traffic record in 47/85 orders (55.3%)
+  - "Weather disruption" corroborated by rain/fog external record in 66/81 orders (81.5%)
+
+Associated conditions (co-occurrence, NOT causation; vs orders without a festival record):
+  - external factor: festival period: 100.0% of orders (baseline 0.0%, lift +100.0pp, n=2242)
+  - external factor: rain or fog: 82.6% of orders (baseline 39.3%, lift +43.3pp, n=1852)
+  - external factor: heavy traffic: 49.7% of orders (baseline 22.2%, lift +27.5pp, n=1115)
+  - fleet log reported address not found: 20.6% of orders (baseline 21.9%, lift -1.3pp, n=461)
+  - warehouse noted system issue: 21.1% of orders (baseline 22.2%, lift -1.1pp, n=473)
+
+Customer feedback samples: "Delivery never came, wrong address issue." / "Driver was polite but package was delayed." / "Good service, on time delivery."
+
+Preparation recommendations:
+  - Add temporary picking/packing staff and extend dispatch windows before festival peaks.
+  - Re-plan festival-week routes and shift deliveries to off-peak windows.
+  - Run address verification campaigns before festival-season order surges.
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.
+  - Festival flag comes from external_factors records; orders without any external record fall into the baseline.</pre>
+<h2>UC6 — If we onboard a client with ~20,000 extra monthly orders (Mumbai &amp; Pune focus), what new failure risks should we expect and how do we mitigate them?</h2>
+<pre>PROJECTED RISKS FOR ONBOARDING ~20000 EXTRA MONTHLY ORDERS
+
+Projection: at the historical system failure rate of 20.0% and late rate of 12.7%, expect ~4008 failed and ~2542 late deliveries per month.
+
+Projected failure breakdown:
+  - Stockout: ~850 failures/month (historical rate 4.3%)
+  - Warehouse delay: ~844 failures/month (historical rate 4.2%)
+  - Incorrect address: ~818 failures/month (historical rate 4.1%)
+  - Weather disruption: ~770 failures/month (historical rate 3.9%)
+  - Traffic congestion: ~726 failures/month (historical rate 3.6%)
+
+Capacity context (Mumbai, Pune):
+  - Mumbai: ~75 orders/month today, warehouse capacity 2223, 58 active drivers (~1 orders/driver/month)
+  - Pune: ~72 orders/month today, warehouse capacity 5696, 55 active drivers (~1 orders/driver/month)
+
+Largest current clients for comparison:
+  - Bath, Bhatt and Gulati: 35 orders, failure rate 28.6%
+  - Atwal-Dhawan: 34 orders, failure rate 17.6%
+  - Majumdar, Sarraf and Bhalla: 33 orders, failure rate 27.3%
+  - Chaudhuri Group: 33 orders, failure rate 24.2%
+  - Jain, Doshi and Sanghvi: 33 orders, failure rate 15.2%
+
+Mitigations:
+  - Negotiate inventory commitments and safety stock for the new client before go-live.
+  - Stage the volume ramp-up and pre-book additional picking/packing capacity.
+  - Enforce address validation at order intake for the new client integration.
+
+Caveats:
+  - This is a PROJECTION from historical rates, not a measurement: the new client has no order history.
+  - Historical rates come from Jan–Sep 2025 orders; seasonality beyond that window is not modeled.
+  - Warehouse capacity units are as provided in warehouses.csv; interpretation (orders/day vs slots) is not specified in the data.</pre>
+</body></html>

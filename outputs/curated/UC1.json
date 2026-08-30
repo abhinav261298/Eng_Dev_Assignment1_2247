@@ -1,50 +1,51 @@
 {
   "useCase": "UC1",
-  "city": "Mumbai",
-  "date": "2025-08-14",
-  "population": "orders due for delivery in Mumbai on 2025-08-14",
-  "baseline": "all Mumbai orders (Jan–Sep 2025)",
+  "city": "New Delhi",
+  "date": "2025-04-27",
+  "population": "orders due for delivery in New Delhi on 2025-04-27",
+  "baseline": "all New Delhi orders (Jan–Sep 2025)",
   "outcomes": {
-    "totalOrders": 8,
-    "failed": 3,
-    "late": 1,
-    "onTime": 0,
-    "returned": 0,
-    "pendingOrInTransit": 4,
-    "failureRate": 0.375,
-    "lateRate": 0.125
+    "totalOrders": 16,
+    "failed": 2,
+    "late": 5,
+    "onTime": 1,
+    "returned": 3,
+    "pendingOrInTransit": 5,
+    "failureRate": 0.125,
+    "lateRate": 0.3125
   },
   "failureReasons": [
     {
-      "reason": "Stockout",
-      "count": 2,
-      "share": 0.6666666666666666
+      "reason": "Weather disruption",
+      "count": 1,
+      "share": 0.5
     },
     {
-      "reason": "Traffic congestion",
+      "reason": "Warehouse delay",
       "count": 1,
-      "share": 0.3333333333333333
+      "share": 0.5
     }
   ],
   "factorRates": [],
   "corroborations": [
     {
-      "reason": "Stockout",
-      "evidenceLabel": "warehouse \"Stock delay on item\" note",
-      "matchedOrders": 0,
-      "ordersWithReason": 2,
-      "corroborationRate": 0
-    },
-    {
-      "reason": "Traffic congestion",
-      "evidenceLabel": "fleet congestion note or heavy-traffic record",
+      "reason": "Warehouse delay",
+      "evidenceLabel": "warehouse delay-related notes",
       "matchedOrders": 0,
       "ordersWithReason": 1,
       "corroborationRate": 0
+    },
+    {
+      "reason": "Weather disruption",
+      "evidenceLabel": "rain/fog external record",
+      "matchedOrders": 1,
+      "ordersWithReason": 1,
+      "corroborationRate": 1
     }
   ],
   "feedbackSamples": [
-    "Package cancelled due to stock issue.",
+    "Driver was polite but package was delayed.",
+    "Delivery never came, wrong address issue.",
     "Package was late, no update from driver."
   ],
   "caveats": [

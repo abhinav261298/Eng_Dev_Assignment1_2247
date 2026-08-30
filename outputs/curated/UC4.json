@@ -1,0 +1,344 @@
+{
+  "useCase": "UC4",
+  "month": "2025-07",
+  "cityA": {
+    "city": "New Delhi",
+    "population": "orders placed in New Delhi during 2025-07",
+    "baseline": "all orders placed in 2025-07 (all cities)",
+    "outcomes": {
+      "totalOrders": 254,
+      "failed": 48,
+      "late": 33,
+      "onTime": 13,
+      "returned": 48,
+      "pendingOrInTransit": 112,
+      "failureRate": 0.1889763779527559,
+      "lateRate": 0.12992125984251968
+    },
+    "failureReasons": [
+      {
+        "reason": "Weather disruption",
+        "count": 12,
+        "share": 0.25
+      },
+      {
+        "reason": "Traffic congestion",
+        "count": 12,
+        "share": 0.25
+      },
+      {
+        "reason": "Stockout",
+        "count": 9,
+        "share": 0.1875
+      },
+      {
+        "reason": "Warehouse delay",
+        "count": 8,
+        "share": 0.16666666666666666
+      },
+      {
+        "reason": "Incorrect address",
+        "count": 7,
+        "share": 0.14583333333333334
+      }
+    ],
+    "factorRates": [
+      {
+        "factor": "had_breakdown",
+        "label": "fleet log reported vehicle breakdown",
+        "tier": "association",
+        "rate": 0.18503937007874016,
+        "baselineRate": 0.2278582930756844,
+        "lift": -0.04281892299694423,
+        "support": 47
+      },
+      {
+        "factor": "had_bad_weather",
+        "label": "external factor: rain or fog",
+        "tier": "association",
+        "rate": 0.42913385826771655,
+        "baselineRate": 0.4718196457326892,
+        "lift": -0.04268578746497265,
+        "support": 109
+      },
+      {
+        "factor": "had_holiday",
+        "label": "external factor: holiday period",
+        "tier": "association",
+        "rate": 0.16929133858267717,
+        "baselineRate": 0.20933977455716588,
+        "lift": -0.040048435974488705,
+        "support": 43
+      },
+      {
+        "factor": "had_heavy_traffic",
+        "label": "external factor: heavy traffic",
+        "tier": "association",
+        "rate": 0.22440944881889763,
+        "baselineRate": 0.2632850241545894,
+        "lift": -0.03887557533569175,
+        "support": 57
+      },
+      {
+        "factor": "had_strike",
+        "label": "external factor: strike",
+        "tier": "association",
+        "rate": 0.16535433070866143,
+        "baselineRate": 0.19887278582930756,
+        "lift": -0.033518455120646135,
+        "support": 42
+      },
+      {
+        "factor": "had_slow_packing",
+        "label": "warehouse noted slow packing",
+        "tier": "association",
+        "rate": 0.19291338582677164,
+        "baselineRate": 0.21658615136876005,
+        "lift": -0.02367276554198841,
+        "support": 49
+      },
+      {
+        "factor": "had_festival",
+        "label": "external factor: festival period",
+        "tier": "association",
+        "rate": 0.20078740157480315,
+        "baselineRate": 0.2222222222222222,
+        "lift": -0.021434820647419056,
+        "support": 51
+      },
+      {
+        "factor": "had_stock_delay",
+        "label": "warehouse noted stock delay on item",
+        "tier": "association",
+        "rate": 0.25196850393700787,
+        "baselineRate": 0.23349436392914655,
+        "lift": 0.018474140007861323,
+        "support": 64
+      },
+      {
+        "factor": "had_address_issue",
+        "label": "fleet log reported address not found",
+        "tier": "association",
+        "rate": 0.19291338582677164,
+        "baselineRate": 0.20853462157809985,
+        "lift": -0.015621235751328205,
+        "support": 49
+      },
+      {
+        "factor": "had_system_issue",
+        "label": "warehouse noted system issue",
+        "tier": "association",
+        "rate": 0.23228346456692914,
+        "baselineRate": 0.2181964573268921,
+        "lift": 0.01408700724003703,
+        "support": 59
+      },
+      {
+        "factor": "had_congestion",
+        "label": "fleet log reported heavy congestion",
+        "tier": "association",
+        "rate": 0.21653543307086615,
+        "baselineRate": 0.20772946859903382,
+        "lift": 0.008805964471832323,
+        "support": 55
+      }
+    ],
+    "corroborations": [
+      {
+        "reason": "Incorrect address",
+        "evidenceLabel": "fleet \"Address not found\" note",
+        "matchedOrders": 2,
+        "ordersWithReason": 7,
+        "corroborationRate": 0.2857142857142857
+      },
+      {
+        "reason": "Stockout",
+        "evidenceLabel": "warehouse \"Stock delay on item\" note",
+        "matchedOrders": 0,
+        "ordersWithReason": 9,
+        "corroborationRate": 0
+      },
+      {
+        "reason": "Warehouse delay",
+        "evidenceLabel": "warehouse delay-related notes",
+        "matchedOrders": 4,
+        "ordersWithReason": 8,
+        "corroborationRate": 0.5
+      },
+      {
+        "reason": "Traffic congestion",
+        "evidenceLabel": "fleet congestion note or heavy-traffic record",
+        "matchedOrders": 5,
+        "ordersWithReason": 12,
+        "corroborationRate": 0.4166666666666667
+      },
+      {
+        "reason": "Weather disruption",
+        "evidenceLabel": "rain/fog external record",
+        "matchedOrders": 5,
+        "ordersWithReason": 12,
+        "corroborationRate": 0.4166666666666667
+      }
+    ],
+    "feedbackSamples": [
+      "Good service, on time delivery.",
+      "Package cancelled due to stock issue.",
+      "Package was late, no update from driver."
+    ],
+    "caveats": [
+      "Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.",
+      "Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.",
+      "Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates."
+    ]
+  },
+  "cityB": {
+    "city": "Ahmedabad",
+    "population": "orders placed in Ahmedabad during 2025-07",
+    "baseline": "all orders placed in 2025-07 (all cities)",
+    "outcomes": {
+      "totalOrders": 138,
+      "failed": 27,
+      "late": 27,
+      "onTime": 5,
+      "returned": 31,
+      "pendingOrInTransit": 48,
+      "failureRate": 0.1956521739130435,
+      "lateRate": 0.1956521739130435
+    },
+    "failureReasons": [
+      {
+        "reason": "Stockout",
+        "count": 9,
+        "share": 0.3333333333333333
+      },
+      {
+        "reason": "Weather disruption",
+        "count": 6,
+        "share": 0.2222222222222222
+      },
+      {
+        "reason": "Warehouse delay",
+        "count": 5,
+        "share": 0.18518518518518517
+      },
+      {
+        "reason": "Traffic congestion",
+        "count": 5,
+        "share": 0.18518518518518517
+      },
+      {
+        "reason": "Incorrect address",
+        "count": 2,
+        "share": 0.07407407407407407
+      }
+    ],
+    "factorRates": [
+      {
+        "factor": "had_heavy_traffic",
+        "label": "external factor: heavy traffic",
+        "tier": "association",
+        "rate": 0.3115942028985507,
+        "baselineRate": 0.2632850241545894,
+        "lift": 0.048309178743961345,
+        "support": 43
+      },
+      {
+        "factor": "had_bad_weather",
+        "label": "external factor: rain or fog",
+        "tier": "association",
+        "rate": 0.5144927536231884,
+        "baselineRate": 0.4718196457326892,
+        "lift": 0.04267310789049916,
+        "support": 71
+      },
+      {
+        "factor": "had_festival",
+        "label": "external factor: festival period",
+        "tier": "association",
+        "rate": 0.2391304347826087,
+        "baselineRate": 0.2222222222222222,
+        "lift": 0.016908212560386493,
+        "support": 33
+      },
+      {
+        "factor": "had_address_issue",
+        "label": "fleet log reported address not found",
+        "tier": "association",
+        "rate": 0.21739130434782608,
+        "baselineRate": 0.20853462157809985,
+        "lift": 0.008856682769726232,
+        "support": 30
+      },
+      {
+        "factor": "had_breakdown",
+        "label": "fleet log reported vehicle breakdown",
+        "tier": "association",
+        "rate": 0.2318840579710145,
+        "baselineRate": 0.2278582930756844,
+        "lift": 0.004025764895330103,
+        "support": 32
+      },
+      {
+        "factor": "had_slow_packing",
+        "label": "warehouse noted slow packing",
+        "tier": "association",
+        "rate": 0.21739130434782608,
+        "baselineRate": 0.21658615136876005,
+        "lift": 0.0008051529790660261,
+        "support": 30
+      }
+    ],
+    "corroborations": [
+      {
+        "reason": "Incorrect address",
+        "evidenceLabel": "fleet \"Address not found\" note",
+        "matchedOrders": 0,
+        "ordersWithReason": 2,
+        "corroborationRate": 0
+      },
+      {
+        "reason": "Stockout",
+        "evidenceLabel": "warehouse \"Stock delay on item\" note",
+        "matchedOrders": 3,
+        "ordersWithReason": 9,
+        "corroborationRate": 0.3333333333333333
+      },
+      {
+        "reason": "Warehouse delay",
+        "evidenceLabel": "warehouse delay-related notes",
+        "matchedOrders": 3,
+        "ordersWithReason": 5,
+        "corroborationRate": 0.6
+      },
+      {
+        "reason": "Traffic congestion",
+        "evidenceLabel": "fleet congestion note or heavy-traffic record",
+        "matchedOrders": 3,
+        "ordersWithReason": 5,
+        "corroborationRate": 0.6
+      },
+      {
+        "reason": "Weather disruption",
+        "evidenceLabel": "rain/fog external record",
+        "matchedOrders": 3,
+        "ordersWithReason": 6,
+        "corroborationRate": 0.5
+      }
+    ],
+    "feedbackSamples": [
+      "Delivery never came, wrong address issue.",
+      "Package cancelled due to stock issue.",
+      "Driver was polite but package was delayed."
+    ],
+    "caveats": [
+      "Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.",
+      "Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.",
+      "Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates."
+    ]
+  },
+  "caveats": [
+    "Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.",
+    "Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.",
+    "Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates."
+  ]
+}

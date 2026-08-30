@@ -68,9 +68,19 @@ more than one warehouse and 2,586 span more than one driver.
       fallback chain) — 36 tests total, coverage gates still green
 - Note: live-key smoke test pending user's OPENAI_API_KEY in .env (never committed)
 
-### Phase 4 — Outputs & documentation  [PENDING]
-- [ ] Recorded sample outputs for all six use cases → outputs/
-- [ ] Word document (write-up + diagram)
+### Phase 4 — Outputs & documentation  [DONE 2026-08-30]
+- [x] scripts/recordSamples.ts (`npm run record-samples`) — curated, reproducible outputs for all
+      six use cases → outputs/curated/ (UC*.txt narrative + UC*.json evidence + sample-outputs.md);
+      template renderer only (per decision: no OpenAI key used)
+- [x] Word documents (authored as HTML, converted via LibreOffice headless):
+      docs/Delivery-Root-Cause-Analysis-POC.docx — problem, data landscape + ER diagram,
+      DQ findings, evidence-tier methodology, per-use-case logic, architecture options,
+      implementation/verification, sample output, limitations;
+      docs/Sample-Use-Case-Outputs.docx — full recorded outputs for UC1–UC6
+- [x] DOCX content verified programmatically (headings/sections present in word/document.xml)
+- [x] README.md for the GitHub repo deliverable (run instructions, architecture, use cases)
+- Remaining for the user (outside POC scope): record demo video, share folder link, send email
+- [ ] README file with instructions on how to run the project and project structure, etc
 
 ## Data-quality findings (from profiling; drive ingest/view design)
 - Cross-table timestamps incoherent: 97% of warehouse/external/fleet timestamps are >3 days
