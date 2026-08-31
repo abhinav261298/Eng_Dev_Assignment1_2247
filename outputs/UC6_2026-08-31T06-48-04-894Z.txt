@@ -1,0 +1,31 @@
+PROJECTED RISKS FOR ONBOARDING ~20000 EXTRA MONTHLY ORDERS
+
+Projection: at the historical system failure rate of 20.0% and late rate of 12.7%, expect ~4008 failed and ~2542 late deliveries per month.
+
+Projected failure breakdown:
+  - Stockout: ~850 failures/month (historical rate 4.3%)
+  - Warehouse delay: ~844 failures/month (historical rate 4.2%)
+  - Incorrect address: ~818 failures/month (historical rate 4.1%)
+  - Weather disruption: ~770 failures/month (historical rate 3.9%)
+  - Traffic congestion: ~726 failures/month (historical rate 3.6%)
+
+Capacity context (Mumbai, Pune):
+  - Mumbai: ~75 orders/month today, warehouse capacity 2223, 58 active drivers (~1 orders/driver/month)
+  - Pune: ~72 orders/month today, warehouse capacity 5696, 55 active drivers (~1 orders/driver/month)
+
+Largest current clients for comparison:
+  - Bath, Bhatt and Gulati: 35 orders, failure rate 28.6%
+  - Atwal-Dhawan: 34 orders, failure rate 17.6%
+  - Majumdar, Sarraf and Bhalla: 33 orders, failure rate 27.3%
+  - Chaudhuri Group: 33 orders, failure rate 24.2%
+  - Jain, Doshi and Sanghvi: 33 orders, failure rate 15.2%
+
+Mitigations:
+  - Negotiate inventory commitments and safety stock for the new client before go-live.
+  - Stage the volume ramp-up and pre-book additional picking/packing capacity.
+  - Enforce address validation at order intake for the new client integration.
+
+Caveats:
+  - This is a PROJECTION from historical rates, not a measurement: the new client has no order history.
+  - Historical rates come from Jan–Sep 2025 orders; seasonality beyond that window is not modeled.
+  - Warehouse capacity units are as provided in warehouses.csv; interpretation (orders/day vs slots) is not specified in the data.

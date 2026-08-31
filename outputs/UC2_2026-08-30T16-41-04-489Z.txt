@@ -1,0 +1,15 @@
+WHY DID SAINI LLC'S ORDERS FAIL (2025-08-01 to 2025-08-07)?
+
+Population: orders placed by Saini LLC between 2025-08-01 and 2025-08-07 — 3 orders.
+Outcomes: 0 failed (0.0%), 0 delivered late (0.0%), 0 on-time, 1 returned, 2 pending/in-transit.
+
+Recorded causes: no failed orders in this population.
+
+Associated conditions: none met the minimum support threshold (n >= 30).
+
+Context: window failure rate 0.0% vs client all-time 21.4% vs system 20.0%.
+
+Caveats:
+  - Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.
+  - Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.
+  - Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.

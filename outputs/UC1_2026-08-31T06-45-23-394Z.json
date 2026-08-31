@@ -1,0 +1,57 @@
+{
+  "useCase": "UC1",
+  "city": "New Delhi",
+  "date": "2025-04-27",
+  "population": "orders due for delivery in New Delhi on 2025-04-27",
+  "baseline": "all New Delhi orders (Jan–Sep 2025)",
+  "outcomes": {
+    "totalOrders": 16,
+    "failed": 2,
+    "late": 5,
+    "onTime": 1,
+    "returned": 3,
+    "pendingOrInTransit": 5,
+    "failureRate": 0.125,
+    "lateRate": 0.3125
+  },
+  "failureReasons": [
+    {
+      "reason": "Weather disruption",
+      "count": 1,
+      "share": 0.5
+    },
+    {
+      "reason": "Warehouse delay",
+      "count": 1,
+      "share": 0.5
+    }
+  ],
+  "factorRates": [],
+  "corroborations": [
+    {
+      "reason": "Warehouse delay",
+      "evidenceLabel": "warehouse delay-related notes",
+      "matchedOrders": 0,
+      "ordersWithReason": 1,
+      "corroborationRate": 0
+    },
+    {
+      "reason": "Weather disruption",
+      "evidenceLabel": "rain/fog external record",
+      "matchedOrders": 1,
+      "ordersWithReason": 1,
+      "corroborationRate": 1
+    }
+  ],
+  "feedbackSamples": [
+    "Driver was polite but package was delayed.",
+    "Delivery never came, wrong address issue.",
+    "Package was late, no update from driver."
+  ],
+  "caveats": [
+    "Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.",
+    "Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.",
+    "Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates.",
+    "Delivered-but-late orders carry no recorded failure_reason; their explanation rests on association evidence only."
+  ]
+}

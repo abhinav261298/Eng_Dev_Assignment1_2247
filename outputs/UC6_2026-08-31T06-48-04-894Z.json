@@ -1,0 +1,92 @@
+{
+  "useCase": "UC6",
+  "extraMonthlyOrders": 20000,
+  "targetCities": [
+    "Mumbai",
+    "Pune"
+  ],
+  "systemFailureRate": 0.2004,
+  "systemLateRate": 0.1271,
+  "projectedMonthlyFailures": 4008,
+  "projectedMonthlyLate": 2542,
+  "projectedReasons": [
+    {
+      "reason": "Stockout",
+      "historicalRate": 0.0425,
+      "projectedMonthlyFailures": 850
+    },
+    {
+      "reason": "Warehouse delay",
+      "historicalRate": 0.0422,
+      "projectedMonthlyFailures": 844
+    },
+    {
+      "reason": "Incorrect address",
+      "historicalRate": 0.0409,
+      "projectedMonthlyFailures": 818
+    },
+    {
+      "reason": "Weather disruption",
+      "historicalRate": 0.0385,
+      "projectedMonthlyFailures": 770
+    },
+    {
+      "reason": "Traffic congestion",
+      "historicalRate": 0.0363,
+      "projectedMonthlyFailures": 726
+    }
+  ],
+  "cityCapacities": [
+    {
+      "city": "Mumbai",
+      "currentAvgMonthlyOrders": 75,
+      "warehouseCapacityTotal": 2223,
+      "activeDrivers": 58,
+      "ordersPerActiveDriver": 1
+    },
+    {
+      "city": "Pune",
+      "currentAvgMonthlyOrders": 72,
+      "warehouseCapacityTotal": 5696,
+      "activeDrivers": 55,
+      "ordersPerActiveDriver": 1
+    }
+  ],
+  "comparableClientRates": [
+    {
+      "clientName": "Bath, Bhatt and Gulati",
+      "orders": 35,
+      "failureRate": 0.2857142857142857
+    },
+    {
+      "clientName": "Atwal-Dhawan",
+      "orders": 34,
+      "failureRate": 0.17647058823529413
+    },
+    {
+      "clientName": "Majumdar, Sarraf and Bhalla",
+      "orders": 33,
+      "failureRate": 0.2727272727272727
+    },
+    {
+      "clientName": "Chaudhuri Group",
+      "orders": 33,
+      "failureRate": 0.24242424242424243
+    },
+    {
+      "clientName": "Jain, Doshi and Sanghvi",
+      "orders": 33,
+      "failureRate": 0.15151515151515152
+    }
+  ],
+  "mitigations": [
+    "Negotiate inventory commitments and safety stock for the new client before go-live.",
+    "Stage the volume ramp-up and pre-book additional picking/packing capacity.",
+    "Enforce address validation at order intake for the new client integration."
+  ],
+  "caveats": [
+    "This is a PROJECTION from historical rates, not a measurement: the new client has no order history.",
+    "Historical rates come from Jan–Sep 2025 orders; seasonality beyond that window is not modeled.",
+    "Warehouse capacity units are as provided in warehouses.csv; interpretation (orders/day vs slots) is not specified in the data."
+  ]
+}

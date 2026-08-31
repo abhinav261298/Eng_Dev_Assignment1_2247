@@ -1,0 +1,30 @@
+{
+  "useCase": "UC2",
+  "clientId": 1,
+  "clientName": "Saini LLC",
+  "fromDate": "2025-08-01",
+  "toDate": "2025-08-07",
+  "clientAllTimeFailureRate": 0.21428571428571427,
+  "systemFailureRate": 0.2004,
+  "population": "orders placed by Saini LLC between 2025-08-01 and 2025-08-07",
+  "baseline": "all Saini LLC orders",
+  "outcomes": {
+    "totalOrders": 3,
+    "failed": 0,
+    "late": 0,
+    "onTime": 0,
+    "returned": 1,
+    "pendingOrInTransit": 2,
+    "failureRate": 0,
+    "lateRate": 0
+  },
+  "failureReasons": [],
+  "factorRates": [],
+  "corroborations": [],
+  "feedbackSamples": [],
+  "caveats": [
+    "Only ~63% of orders have fleet/warehouse/external/feedback records; factor rates use all orders in the population as denominator.",
+    "Association lifts describe co-occurrence, not causation; recorded failure_reason is the only tier-1 causal field.",
+    "Cross-table timestamps are unreliable in this dataset; all time filtering anchors on order dates."
+  ]
+}
